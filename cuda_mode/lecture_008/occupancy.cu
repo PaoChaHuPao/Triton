@@ -23,7 +23,7 @@ int main() {
 
     initializeArray(in, n);
 
-    int blockSize = 1024; // Optimal block size for many devices
+    int blockSize = 4096; // Optimal block size for many devices
     int numBlocks = (n + blockSize - 1) / blockSize; // Calculate the number of blocks
 
     // Optimize grid dimensions based on device properties

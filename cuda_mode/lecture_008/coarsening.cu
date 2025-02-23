@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#define N 1024
-#define THREADS_PER_BLOCK 256 // This is just an example block size
+#define N 1024*1024
+#define THREADS_PER_BLOCK 1024 // This is just an example block size
 
 // Original vector addition kernel without coarsening
 __global__ void VecAdd(float* A, float* B, float* C)
