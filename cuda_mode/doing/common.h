@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <iostream>
 
-#define BLOCK_SIZE 96
+using namespace std;
+
+#define BLOCK_SIZE  1024
+#define WARP_SIZE 32
 
 #define FLOAT4(value) (reinterpret_cast<float4*>(&(value))[0])
 #define CEIL(value,align_num) ((value+align_num-1)/(align_num))
