@@ -236,4 +236,4 @@ shared mem会被划分为32个bank,并且按照连续的0~31个bank连续的将�
 | 1 | 2 | 3 | ... | 0  | 1 |
 | 2 | 3 | 4 | ... | 1  | 2 |
 
-对于即将被按列读取的这块shared mem来说解决了bank conflict
+对于即将被按列读取的这块shared mem来说解决了bank conflict(非常典型的就是transpose算子)
