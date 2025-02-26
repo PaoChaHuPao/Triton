@@ -217,6 +217,8 @@ ncu ./sum | grep Occupancy
 * 多个线程读同一个数据时，仅有一个线程读，然后broadcast到其他线程
 * 多个线程写同一个数据时，仅会有一个线程写成功（不过这里没有提及是否会将写操作执行多次（即a. 多个线程写入，最后一个线程随机写完; or b. 随机挑选一个线程执行写入），具体流程存疑）
 
+1. 方案一:Padding
+
 ```
 __shared__ float s_mem[BLOCK_SIZE][BLOCK_SIZE + 1];  // 避免bank conflict
 ```
@@ -237,3 +239,30 @@ shared mem会被划分为32个bank,并且按照连续的0~31个bank连续的将�
 | 2 | 3 | 4 | ... | 1  | 2 |
 
 对于即将被按列读取的这块shared mem来说解决了bank conflict(非常典型的就是transpose算子)
+padding的缺点有：
+
+* 可能降低SM的occupancy。由于每个SM的可使用的shared memory有限，如果每个block使用的共享内存增加，则SM内最大可并发的block数目减少，导致资源不能被充分利用，一些计算资源被闲置。
+* 地址访问对齐问题。需要仔细考虑padding的大小来避免地址不对齐的问题，比如访问shared memory时可能是向量化的访问，比如int4访问，也就是每次访问4个int，即16字节，那每次访问的地址必须是16字节对齐的，对于int s\_data[32][**33**]这种padding方式，第二行元素的起始地址就是非16字节对齐，会导致kernel执行出错。
+
+2. 方案二:Swizzling
+   参考来自[CUDA shared memory避免bank conflict的swizzling机制解析 - 知乎](https://zhuanlan.zhihu.com/p/4746910252)[Cuda thread block swizzling机制解析 - 知乎](https://zhuanlan.zhihu.com/p/6872421770)
+   先说结论利用的是Xor(异或的性质),通过改变逻辑坐标与物理坐标的映射使得访存的时候同一列的时候分布在不同的bank中
+
+对于swizzling机制，逻辑坐标 (xl,yl) 和物理坐标 (xp,yp) 的映射关系如下：
+
+* yp=yl ，**物理行与逻辑行一致**。
+* xp=xl⊕yl ，**物理列等于逻辑行和逻辑列的异或值。**
+
+公式中的 ⊕ 表示异或操作，异或操作除了满足交换律和结合律之外，还有下面的一些性质：
+
+* **性质一**： x⊕x=0 即两个相同的值进行异或，结果仍然为0。
+* **性质二**： x⊕0=x 即任何值与0进行异或，结果等于自身。
+* **性质三**：如果 x1≠x2 ，则 x1⊕x2≠0 ，即两个不同的值异或，结果一定不为0。
+* **性质四**：如果 x1⊕x2≠0 ，则 x1≠x2 ，即如果两个值异或的结果不为0，则两者的值一定不同。
+  使用这些性质对每行 每列分别进行证明即可, 同时还满足能否反射回原来正确的坐标
+  
+  # sgemm.cu
+  
+  这里我认为有必要进行完整系统的性能分析,copy from[wangzyon/NVIDIA\_SGEMM\_PRACTICE: Step-by-step optimization of CUDA SGEMM](https://github.com/wangzyon/NVIDIA_SGEMM_PRACTICE)
+  
+
