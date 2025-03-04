@@ -158,6 +158,7 @@ __global__ void warp_sum_v3(float* in, float* out, int n)
 
 int main()
 {
+    atomicMax()
     int size = 1 << 20;
     float* in_h = new float[size];
     float* out_h = new float;
