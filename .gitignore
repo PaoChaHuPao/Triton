@@ -7,6 +7,6 @@
 *.pyc
 
 
-./ppq/qtyolov5/yolo_model_zoo/imgs
-./mlc-ai/data/FashionMNIST/raw
-./mlc-ai/tune_tmp
+./ppq/qtyolov5/yolo_model_zoo/imgs/*
+./mlc-ai/data/FashionMNIST/raw/*
+./mlc-ai/tune_tmp/*
