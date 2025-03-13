@@ -12,7 +12,7 @@ import trt_infer
 # PWN(PWN(Sigmoid_42), Mul_43): 0.03584ms
 
 # Nvidia Nsight Performance Profile
-ENGINE_PATH = 'Output/yolov5s.v5(ppq).engine'
+ENGINE_PATH = 'Output/yolov5s.v5(fp32).engine'
 BATCH_SIZE  = 1
 INPUT_SHAPE = [BATCH_SIZE, 3, 640, 640]
 

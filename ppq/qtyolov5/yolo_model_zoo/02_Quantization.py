@@ -8,8 +8,8 @@ from PIL import Image
 from ppq import *
 from ppq.api import *
 
-ONNX_PATH        = 'models/yolov6s.onnx'       # 你的模型位置
-ENGINE_PATH      = 'Output/yolov5s6.onnx'  # 生成的 Engine 位置
+ONNX_PATH        = 'models/yolov5s.onnx'       # 你的模型位置
+ENGINE_PATH      = 'Output/yolov5s(ppq).engine'  # 生成的 Engine 位置
 CALIBRATION_PATH = 'imgs'                         # 校准数据集
 BATCHSIZE        = 1
 EXECUTING_DEVICE = 'cuda'
